@@ -1,0 +1,55 @@
+package com.example.frogling;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class CreateMemeActivity extends Activity {
+
+	public EditText resultTop;
+	public TextView showTop;
+	public EditText resultButtom;
+	public TextView showButtom;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_create_meme);
+		resultTop = (EditText) findViewById(R.id.top_text_edit);
+		resultTxt.addTextChangedListener(filterTextWatcher);
+		showText = (TextView) findViewById(R.id.top_text);
+
+	}
+
+	private TextWatcher filterTextWatcher = new TextWatcher() {
+
+		public void afterTextChanged(Editable s) {
+			// Do your stuff
+			String text;
+			text = resultTxt.getText().toString();
+			if (text != null) {
+				showText.setText(text);
+			} else {
+				showText.setText("You Have Not type anything");
+
+			}
+
+		}
+
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// do your stuff
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			// do your stuff
+
+		}
+
+	};
+
+}

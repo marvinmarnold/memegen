@@ -4,5 +4,6 @@
     <string name="app_name">Frogling</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="top_text_here">Top Text Here</string>
+	<string name="buttom_text_here">Buttom Text Here</string>
 </resources>
