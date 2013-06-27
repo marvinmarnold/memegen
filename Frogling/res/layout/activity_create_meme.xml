@@ -40,7 +40,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/buttom_text"
+            android:id="@+id/bottom_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/meme_image"
@@ -61,10 +61,10 @@
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/buttom_text_edit"
+        android:id="@+id/bottom_text_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/buttom_text_here" />
+        android:hint="@string/bottom_text_here" />
 
 </LinearLayout>

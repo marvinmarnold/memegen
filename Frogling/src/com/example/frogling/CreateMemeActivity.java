@@ -11,21 +11,21 @@ public class CreateMemeActivity extends Activity {
 
 	public EditText resultTop;
 	public TextView showTop;
-	public EditText resultButtom;
-	public TextView showButtom;
+	public EditText resultBottom;
+	public TextView showBottom;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_meme);
 		resultTop = (EditText) findViewById(R.id.top_text_edit);
-		resultButtom = (EditText) findViewById(R.id.buttom_text_edit);
+		resultBottom = (EditText) findViewById(R.id.bottom_text_edit);
 
 		resultTop.addTextChangedListener(filterTopWatcher);
-		resultButtom.addTextChangedListener(filterButtomWatcher);
+		resultBottom.addTextChangedListener(filterButtomWatcher);
 
 		showTop = (TextView) findViewById(R.id.top_text);
-		showButtom = (TextView) findViewById(R.id.buttom_text);
+		showBottom = (TextView) findViewById(R.id.bottom_text);
 
 	}
 
@@ -62,11 +62,11 @@ public class CreateMemeActivity extends Activity {
 		public void afterTextChanged(Editable s) {
 			// Do your stuff
 			String text;
-			text = resultButtom.getText().toString();
+			text = resultBottom.getText().toString();
 			if (text != null) {
-				showButtom.setText(text);
+				showBottom.setText(text);
 			} else {
-				showButtom.setText("You Have Not type anything");
+				showBottom.setText("You Have Not type anything");
 			}
 
 		}
