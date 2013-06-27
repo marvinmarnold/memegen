@@ -83,11 +83,12 @@ public class CreateMemeActivity extends Activity {
 		meme.setDrawingCacheEnabled(true);
 
 		Bitmap bitmap = Bitmap.createBitmap(meme.getDrawingCache());
-		
-			// MediaStore insertImage().
-			MediaStore.Images.Media image = new MediaStore.Images.Media();
-			//return image.insertImage(getContentResolver(), bitmap, "meme",
-				//	"first try");
+
+		// MediaStore insertImage().
+		MediaStore.Images.Media image = new MediaStore.Images.Media();
+		return image.insertImage(getContentResolver(), bitmap, "meme",
+				"first try");
+	}
 
 	private TextWatcher filterTopWatcher = new TextWatcher() {
 
