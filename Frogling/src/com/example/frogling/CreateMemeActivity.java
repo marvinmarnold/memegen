@@ -4,8 +4,16 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CreateMemeActivity extends Activity {
 
@@ -29,6 +37,23 @@ public class CreateMemeActivity extends Activity {
 
 	}
 
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_share:
+			  Toast.makeText(getApplicationContext(), 
+                      "Share option chosen!", Toast.LENGTH_LONG).show();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 	private TextWatcher filterTopWatcher = new TextWatcher() {
 
 		public void afterTextChanged(Editable s) {
@@ -42,7 +67,6 @@ public class CreateMemeActivity extends Activity {
 			}
 
 		}
-		
 
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
@@ -56,7 +80,7 @@ public class CreateMemeActivity extends Activity {
 		}
 
 	};
-	
+
 	private TextWatcher filterButtomWatcher = new TextWatcher() {
 
 		public void afterTextChanged(Editable s) {
@@ -70,7 +94,6 @@ public class CreateMemeActivity extends Activity {
 			}
 
 		}
-		
 
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
