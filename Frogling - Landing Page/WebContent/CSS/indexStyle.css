@@ -1,0 +1,62 @@
+@CHARSET "windows-1255";
+
+body {
+	background-image: url('../Pictures/Background.png');
+	background-position:  top left;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+section#main-content, section#preview {
+	position: absolute;
+	top: 50%;
+	margin-top: -300px;
+	color: white;
+}
+
+section#main-content {
+	background: rgba(80, 80, 80, 0.6);
+	border: 5px solid black;
+	border-radius: 6px;
+	left: 50%;
+	height: 100px;
+	width: 780px;
+	margin-left: -700px;
+	padding: 0 10px 0 10px;
+}
+
+section#main-content section#description {
+	padding-top: 20px;
+	width: inherit;
+}
+
+section#main-content .learn {
+	margin-top: 15px;
+	color: #90EE90;
+	font-family: Trebuchet MS;
+	font-size: 22px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+section#main-content section#description p {
+	display: none;
+	width: inherit;
+	text-align: justify;
+	font-family: Trebuchet MS;
+	font-size: 20px;
+	font-weight: bold;
+	line-height: 24px;
+}
+
+section#main-content section#features  ul{
+	
+}
+
+section#preview {
+	height: 600px;
+	left: 50%;
+	margin-left: 300px;
+	width: 300px;
+}
