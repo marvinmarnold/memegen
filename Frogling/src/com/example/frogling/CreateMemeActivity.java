@@ -1,21 +1,23 @@
 package com.example.frogling;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,8 @@ public class CreateMemeActivity extends Activity {
 	public TextView showTop;
 	public EditText resultBottom;
 	public TextView showBottom;
+	private static final int SELECT_PICTURE = 1;
+	private String selectedImagePath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +59,52 @@ public class CreateMemeActivity extends Activity {
 					Toast.LENGTH_LONG).show();
 			share();
 			return true;
+		case R.id.action_upload:
+			Intent intent = new Intent();
+			intent.setType("image/*");
+			intent.setAction(Intent.ACTION_PICK);
+			startActivityForResult(
+					Intent.createChooser(intent, "Select Picture"),
+					SELECT_PICTURE);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK) {
+			if (requestCode == SELECT_PICTURE) {
+				Uri selectedImageUri = data.getData();
+				InputStream imageStream;
+				try {
+					imageStream = getContentResolver().openInputStream(
+							selectedImageUri);
+
+					Bitmap bmp = BitmapFactory.decodeStream(imageStream);
+					// Convert to bitmap.
+					// Replace the image id with bitmap.
+
+					ImageView image = (ImageView) findViewById(R.id.meme_image);
+
+					image.setImageBitmap(bmp);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public String getPath(Uri uri) {
+		String[] projection = { MediaStore.Images.Media.DATA };
+		Cursor cursor = managedQuery(uri, projection, null, null, null);
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
 	}
 
 	private void share() {

@@ -25,12 +25,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.frogling.ShareMemeActivity"
-            android:label="@string/menu_share" >
+            android:name="com.example.frogling.ChangePictureActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
