@@ -1,7 +1,11 @@
 package com.example.frogling;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -12,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,13 +51,43 @@ public class CreateMemeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_share:
-			  Toast.makeText(getApplicationContext(), 
-                      "Share option chosen!", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Share option chosen!",
+					Toast.LENGTH_LONG).show();
+			share();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+	private void share() {
+		String url = save();
+
+		if (url != null) {
+			Intent shareIntent = new Intent();
+			shareIntent.setAction(Intent.ACTION_SEND);
+			shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+			shareIntent.setType("image/jpeg");
+			startActivity(Intent.createChooser(shareIntent,
+					getString(R.string.menu_share)));
+		} else {
+			Toast.makeText(getApplicationContext(), "Url: " + url,
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private String save() {
+		RelativeLayout meme = (RelativeLayout) findViewById(R.id.meme);
+		// force the refresh of the view drawing cache. meme is RelativeLayout.
+		meme.setDrawingCacheEnabled(false);
+		meme.setDrawingCacheEnabled(true);
+
+		Bitmap bitmap = Bitmap.createBitmap(meme.getDrawingCache());
+		
+			// MediaStore insertImage().
+			MediaStore.Images.Media image = new MediaStore.Images.Media();
+			//return image.insertImage(getContentResolver(), bitmap, "meme",
+				//	"first try");
 
 	private TextWatcher filterTopWatcher = new TextWatcher() {
 

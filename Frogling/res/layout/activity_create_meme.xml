@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:id="@+id/activitylayout">
+    android:id="@+id/LinearLayout">
 
     <EditText
         android:id="@+id/top_text_edit"
@@ -12,6 +12,7 @@
         android:hint="@string/top_text_here" />
 
     <RelativeLayout
+        android:id="@+id/meme"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp" >
@@ -36,7 +37,6 @@
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="2"
-            android:text="@string/hello_world"
             android:textColor="#000"
             android:textSize="32dp"
             android:textStyle="bold" />
@@ -54,7 +54,6 @@
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="2"
-            android:text="@string/app_name"
             android:textColor="#000"
             android:textSize="32dp"
             android:textStyle="bold" />
