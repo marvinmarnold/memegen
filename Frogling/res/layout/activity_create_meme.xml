@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:id="@+id/LinearLayout">
+    android:orientation="vertical" >
 
     <EditText
         android:id="@+id/top_text_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="@string/top_text_here" />
+
+    <EditText
+        android:id="@+id/bottom_text_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/bottom_text_here" />
 
     <RelativeLayout
         android:id="@+id/meme"
@@ -58,12 +65,5 @@
             android:textSize="32dp"
             android:textStyle="bold" />
     </RelativeLayout>
-
-    <EditText
-        android:id="@+id/bottom_text_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/bottom_text_here" />
 
 </LinearLayout>
