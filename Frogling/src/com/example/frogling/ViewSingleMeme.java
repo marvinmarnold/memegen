@@ -3,21 +3,20 @@
  */
 package com.example.frogling;
 
-import java.io.ByteArrayOutputStream;
-
+import utilities.BackEnd;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 
 /**
  * @author tal11
@@ -43,29 +42,18 @@ public class ViewSingleMeme extends Activity {
 			}
 		});
 	}
-	
-	public void saveMeme(){
+
+	public void saveMeme() {
 		RelativeLayout memeSaved = (RelativeLayout) findViewById(R.id.meme_viewed);
-		ParseObject memeSaver = new ParseObject("Meme");
+		ImageView image = (ImageView)findViewById(R.id.image_viewed);
+		TextView topText = (TextView) findViewById(R.id.view_top_text);
+		TextView bottomText = (TextView) findViewById(R.id.view_bottom_text);
 		
+		//refresh cache.
 		memeSaved.setDrawingCacheEnabled(false);
 		memeSaved.setDrawingCacheEnabled(true);
-		
+		//generate image Bitmap
 		Bitmap memeMap = Bitmap.createBitmap(memeSaved.getDrawingCache());
-		ParseFile file = new ParseFile("image.png", convertBitToByte(memeMap));
-		file.saveInBackground();
-		memeSaver.put("image", file);	
-		try {
-			memeSaver.save();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private byte[] convertBitToByte(Bitmap memeMap) {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		memeMap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-		return stream.toByteArray();
+		BackEnd.saveToParse(memeMap, topText.getText().toString(), bottomText.getText().toString());
 	}
 }

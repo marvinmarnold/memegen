@@ -20,6 +20,7 @@
             android:src="@drawable/firstmeme" />
 
         <TextView
+            android:id="@+id/view_top_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -36,6 +37,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/view_bottom_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/view_meme_image"
