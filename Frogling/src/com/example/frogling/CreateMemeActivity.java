@@ -16,6 +16,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -55,8 +57,7 @@ public class CreateMemeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_share:
-			Toast.makeText(getApplicationContext(), "Share option chosen!",
-					Toast.LENGTH_LONG).show();
+
 			share();
 			return true;
 		case R.id.action_upload:
@@ -67,9 +68,13 @@ public class CreateMemeActivity extends Activity {
 					Intent.createChooser(intent, "Select Picture"),
 					SELECT_PICTURE);
 			return true;
+		case R.id.action_browse:
+			browse();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -105,6 +110,12 @@ public class CreateMemeActivity extends Activity {
 				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
+	}
+
+	private void browse() {
+		Intent viewNoteActivityIntent = new Intent(CreateMemeActivity.this,
+				ViewSingleMeme.class);
+		startActivity(viewNoteActivityIntent);
 	}
 
 	private void share() {
