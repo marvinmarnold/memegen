@@ -56,9 +56,15 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/save_parse"
+        android:id="@+id/view_save_parse_button"
         android:layout_width="70dp"
         android:layout_height="50dp"
         android:text="Save" />
+    
+    <Button
+        android:id="@+id/view_next_button"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:text="Next" />
 
 </LinearLayout>

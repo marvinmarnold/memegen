@@ -13,10 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 
 /**
  * @author tal11
@@ -32,7 +35,8 @@ public class ViewSingleFragment extends Activity {
 				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
 		ParseAnalytics.trackAppOpened(getIntent());
 
-		Button saveButton = (Button) findViewById(R.id.save_parse);
+		showNextMeme();
+		Button saveButton = (Button) findViewById(R.id.view_save_parse_button);
 		saveButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -41,19 +45,63 @@ public class ViewSingleFragment extends Activity {
 				saveMeme();
 			}
 		});
+
+		Button nextButton = (Button) findViewById(R.id.view_next_button);
+		nextButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showNextMeme();
+			}
+		});
 	}
 
+	/**
+	 * Saves the meme on screen as a ParseObject, uses the
+	 * Bakcend.saveToParse(Bitmap, String, String) method.
+	 */
 	public void saveMeme() {
-		RelativeLayout memeSaved = (RelativeLayout) findViewById(R.id.meme_viewed);
-		ImageView image = (ImageView)findViewById(R.id.image_viewed);
+		ImageView image = (ImageView) findViewById(R.id.view_meme_image);
 		TextView topText = (TextView) findViewById(R.id.view_top_text);
 		TextView bottomText = (TextView) findViewById(R.id.view_bottom_text);
-		
-		//refresh cache.
-		memeSaved.setDrawingCacheEnabled(false);
-		memeSaved.setDrawingCacheEnabled(true);
-		//generate image Bitmap
-		Bitmap memeMap = Bitmap.createBitmap(memeSaved.getDrawingCache());
-		BackEnd.saveToParse(memeMap, topText.getText().toString(), bottomText.getText().toString());
+
+		// refresh cache.
+		image.setDrawingCacheEnabled(false);
+		image.setDrawingCacheEnabled(true);
+		// generate image Bitmap
+		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
+		BackEnd.saveToParse(memeMap, topText.getText().toString(), bottomText
+				.getText().toString());
+	}
+
+	/**
+	 * Shows the next meme from the meme query, uses the BackEnd.getNextMeme()
+	 * to get memes.
+	 */
+	public void showNextMeme() {
+
+		ParseObject object = BackEnd.getNextMeme();
+		if (object != null) {
+			ImageView viewedImage = (ImageView) findViewById(R.id.view_meme_image);
+			TextView viewedTopText = (TextView) findViewById(R.id.view_top_text);
+			TextView viewedBottomText = (TextView) findViewById(R.id.view_bottom_text);
+			try {
+				Bitmap map = BackEnd.convertByteToBit(((ParseFile) object
+						.get(BackEnd.IMAGE_KEY)).getData());
+				String topText = (String) object.get(BackEnd.TOP_TEXT);
+				String bottomText = (String) object.get(BackEnd.BOTTOM_TEXT);
+
+				viewedImage.setImageBitmap(map);
+				viewedTopText.setText(topText);
+				viewedBottomText.setText(bottomText);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+
+		}
 	}
 }
