@@ -12,15 +12,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 
 /**
  * @author tal11
@@ -34,16 +33,15 @@ public class ViewSingleFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 
-		return inflater
-				.inflate(R.layout.view_single_meme, container, false);
+		return inflater.inflate(R.layout.view_single_meme, container, false);
 	}
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Button saveButton = (Button) getActivity()
-				.findViewById(R.id.save_parse);
+		setHasOptionsMenu(true);
+		Button saveButton = (Button) getActivity().findViewById(
+				R.id.view_save_parse_button);
 		saveButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -53,6 +51,15 @@ public class ViewSingleFragment extends Fragment {
 			}
 		});
 
+		Button nextButton = (Button) getActivity().findViewById(R.id.view_next_button);
+		nextButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showNextMeme();
+			}
+		});
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -61,8 +68,11 @@ public class ViewSingleFragment extends Fragment {
 		// upload_item.setVisible(false);
 	}
 
+	/**
+	 * Saves the meme on screen as a ParseObject, uses the
+	 * Bakcend.saveToParse(Bitmap, String, String) method.
+	 */
 	public void saveMeme() {
-
 		ImageView image = (ImageView) getActivity().findViewById(
 				R.id.view_meme_image);
 		TextView topText = (TextView) getActivity().findViewById(
@@ -77,5 +87,37 @@ public class ViewSingleFragment extends Fragment {
 		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
 		BackEnd.saveToParse(memeMap, topText.getText().toString(), bottomText
 				.getText().toString());
+	}
+
+	/**
+	 * Shows the next meme from the meme query, uses the BackEnd.getNextMeme()
+	 * to get memes.
+	 */
+	public void showNextMeme() {
+		ParseObject object = BackEnd.getNextMeme();
+		if (object != null) {
+			ImageView viewedImage = (ImageView) getActivity().findViewById(
+					R.id.view_meme_image);
+			TextView viewedTopText = (TextView) getActivity().findViewById(
+					R.id.view_top_text);
+			TextView viewedBottomText = (TextView) getActivity().findViewById(
+					R.id.view_bottom_text);
+			try {
+				Bitmap map = BackEnd.convertByteToBit(((ParseFile) object
+						.get(BackEnd.IMAGE_KEY)).getData());
+				String topText = (String) object.get(BackEnd.TOP_TEXT);
+				String bottomText = (String) object.get(BackEnd.BOTTOM_TEXT);
+
+				viewedImage.setImageBitmap(map);
+				viewedTopText.setText(topText);
+				viewedBottomText.setText(bottomText);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+
+		}
 	}
 }
