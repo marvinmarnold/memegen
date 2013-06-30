@@ -14,9 +14,6 @@
         android:showAsAction="always"
         android:title="@string/menu_share">
     </item>
-    <item
-        android:id="@+id/action_browse"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="Browse Froglingfeed"/>
+
 
 </menu>
