@@ -3,6 +3,10 @@ package com.example.frogling;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.parse.Parse;
+
+import utilities.BackEnd;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,8 +15,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,6 +42,8 @@ public class CreateMemeFragment extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Parse.initialize(this, "AyjtKEZBNR17lzzKJ5LBAQrnb86hNFUNe6eAJ55T",
+				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
 		setContentView(R.layout.activity_create_meme);
 		resultTop = (EditText) findViewById(R.id.top_text_edit);
 		resultBottom = (EditText) findViewById(R.id.bottom_text_edit);
@@ -70,6 +78,9 @@ public class CreateMemeFragment extends Activity {
 			return true;
 		case R.id.action_browse:
 			browse();
+			return true;
+		case R.id.action_save_to_parse:
+			post();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -136,6 +147,7 @@ public class CreateMemeFragment extends Activity {
 
 	private String save() {
 		RelativeLayout meme = (RelativeLayout) findViewById(R.id.meme);
+
 		// force the refresh of the view drawing cache. meme is RelativeLayout.
 		meme.setDrawingCacheEnabled(false);
 		meme.setDrawingCacheEnabled(true);
@@ -144,8 +156,24 @@ public class CreateMemeFragment extends Activity {
 
 		// MediaStore insertImage().
 		MediaStore.Images.Media image = new MediaStore.Images.Media();
-		return image.insertImage(getContentResolver(), bitmap, "meme",
-				"first try");
+		return Media.insertImage(getContentResolver(), bitmap, showTop.getText().toString(),
+				showBottom.getText().toString());
+	}
+	
+	/**
+	 * Saves the meme on screen as a ParseObject, uses the
+	 * Bakcend.saveToParse(Bitmap, String, String) method.
+	 */
+	public void post() {
+		ImageView image = (ImageView) findViewById(R.id.meme_image);
+		Log.d("post()", (image==null)+ "image view is");
+		// refresh cache.
+		image.setDrawingCacheEnabled(false);
+		image.setDrawingCacheEnabled(true);
+		// generate image Bitmap
+		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
+		BackEnd.saveToParse(memeMap, showTop.getText().toString(), showBottom
+				.getText().toString());
 	}
 
 	private TextWatcher filterTopWatcher = new TextWatcher() {

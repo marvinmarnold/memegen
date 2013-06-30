@@ -18,5 +18,10 @@
         android:id="@+id/action_browse"
         android:icon="@android:drawable/ic_menu_help"
         android:title="Browse Froglingfeed"/>
+    
+    <item 
+        android:id="@+id/action_save_to_parse"
+        android:icon="@android:drawable/ic_delete"
+        android:title="Post"/>
 
 </menu>

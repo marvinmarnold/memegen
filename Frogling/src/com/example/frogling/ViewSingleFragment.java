@@ -31,20 +31,10 @@ public class ViewSingleFragment extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_single_meme);
-		Parse.initialize(this, "AyjtKEZBNR17lzzKJ5LBAQrnb86hNFUNe6eAJ55T",
-				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
 		ParseAnalytics.trackAppOpened(getIntent());
 
 		showNextMeme();
-		Button saveButton = (Button) findViewById(R.id.view_save_parse_button);
-		saveButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				saveMeme();
-			}
-		});
+		
 
 		Button nextButton = (Button) findViewById(R.id.view_next_button);
 		nextButton.setOnClickListener(new OnClickListener() {
@@ -55,24 +45,6 @@ public class ViewSingleFragment extends Activity {
 				showNextMeme();
 			}
 		});
-	}
-
-	/**
-	 * Saves the meme on screen as a ParseObject, uses the
-	 * Bakcend.saveToParse(Bitmap, String, String) method.
-	 */
-	public void saveMeme() {
-		ImageView image = (ImageView) findViewById(R.id.view_meme_image);
-		TextView topText = (TextView) findViewById(R.id.view_top_text);
-		TextView bottomText = (TextView) findViewById(R.id.view_bottom_text);
-
-		// refresh cache.
-		image.setDrawingCacheEnabled(false);
-		image.setDrawingCacheEnabled(true);
-		// generate image Bitmap
-		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
-		BackEnd.saveToParse(memeMap, topText.getText().toString(), bottomText
-				.getText().toString());
 	}
 
 	/**
