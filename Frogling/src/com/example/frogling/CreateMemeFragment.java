@@ -8,6 +8,7 @@ import com.parse.Parse;
 import utilities.BackEnd;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,53 +20,64 @@ import android.provider.MediaStore.Images.Media;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateMemeFragment extends Activity {
+public class CreateMemeFragment extends Fragment {
 
 	public EditText resultTop;
 	public TextView showTop;
 	public EditText resultBottom;
 	public TextView showBottom;
 	private static final int SELECT_PICTURE = 1;
-	private String selectedImagePath;
+	protected Activity parentActivity;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Parse.initialize(this, "AyjtKEZBNR17lzzKJ5LBAQrnb86hNFUNe6eAJ55T",
-				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
-		setContentView(R.layout.activity_create_meme);
-		resultTop = (EditText) findViewById(R.id.top_text_edit);
-		resultBottom = (EditText) findViewById(R.id.bottom_text_edit);
+		setHasOptionsMenu(true);
+
+		return inflater
+				.inflate(R.layout.activity_create_meme, container, false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		setHasOptionsMenu(true);
+
+		parentActivity = getActivity();
+		resultTop = (EditText) getActivity().findViewById(R.id.top_text_edit);
+		resultBottom = (EditText) getActivity().findViewById(
+				R.id.bottom_text_edit);
 
 		resultTop.addTextChangedListener(filterTopWatcher);
 		resultBottom.addTextChangedListener(filterButtomWatcher);
 
-		showTop = (TextView) findViewById(R.id.top_text);
-		showBottom = (TextView) findViewById(R.id.bottom_text);
+		showTop = (TextView) getActivity().findViewById(R.id.top_text);
+		showBottom = (TextView) getActivity().findViewById(R.id.bottom_text);
 
 	}
 
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		// MenuItem upload_item = menu.findItem(R.id.action_upload);
+		// upload_item.setVisible(false);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_share:
-
 			share();
 			return true;
 		case R.id.action_upload:
@@ -75,9 +87,8 @@ public class CreateMemeFragment extends Activity {
 			startActivityForResult(
 					Intent.createChooser(intent, "Select Picture"),
 					SELECT_PICTURE);
-			return true;
-		case R.id.action_browse:
-			browse();
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"picking an image from gallery", Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.action_save_to_parse:
 			post();
@@ -88,45 +99,38 @@ public class CreateMemeFragment extends Activity {
 
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {		
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (resultCode == RESULT_OK) {
+		if (data != null && data.getData() != null) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"onActivityResult()", Toast.LENGTH_LONG).show();
+			
 			if (requestCode == SELECT_PICTURE) {
+				
+				Toast.makeText(parentActivity.getApplicationContext(),
+						"select pic()", Toast.LENGTH_LONG).show();
+				
 				Uri selectedImageUri = data.getData();
 				InputStream imageStream;
 				try {
-					imageStream = getContentResolver().openInputStream(
-							selectedImageUri);
+					imageStream = parentActivity.getContentResolver()
+							.openInputStream(selectedImageUri);
 
 					Bitmap bmp = BitmapFactory.decodeStream(imageStream);
 					// Convert to bitmap.
 					// Replace the image id with bitmap.
 
-					ImageView image = (ImageView) findViewById(R.id.meme_image);
+					ImageView image = (ImageView) getActivity().findViewById(
+							R.id.meme_image);
 
 					image.setImageBitmap(bmp);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
+			} 
 		}
-	}
-
-	public String getPath(Uri uri) {
-		String[] projection = { MediaStore.Images.Media.DATA };
-		Cursor cursor = managedQuery(uri, projection, null, null, null);
-		int column_index = cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		cursor.moveToFirst();
-		return cursor.getString(column_index);
-	}
-
-	private void browse() {
-		Intent viewNoteActivityIntent = new Intent(CreateMemeFragment.this,
-				ViewSingleFragment.class);
-		startActivity(viewNoteActivityIntent);
 	}
 
 	private void share() {
@@ -140,13 +144,14 @@ public class CreateMemeFragment extends Activity {
 			startActivity(Intent.createChooser(shareIntent,
 					getString(R.string.menu_share)));
 		} else {
-			Toast.makeText(getApplicationContext(), "Url: " + url,
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"Url: " + url, Toast.LENGTH_LONG).show();
 		}
 	}
 
 	private String save() {
-		RelativeLayout meme = (RelativeLayout) findViewById(R.id.meme);
+		RelativeLayout meme = (RelativeLayout) getActivity().findViewById(
+				R.id.meme);
 
 		// force the refresh of the view drawing cache. meme is RelativeLayout.
 		meme.setDrawingCacheEnabled(false);
@@ -155,8 +160,7 @@ public class CreateMemeFragment extends Activity {
 		Bitmap bitmap = Bitmap.createBitmap(meme.getDrawingCache());
 
 		// MediaStore insertImage().
-		MediaStore.Images.Media image = new MediaStore.Images.Media();
-		return Media.insertImage(getContentResolver(), bitmap, showTop.getText().toString(),
+		return Media.insertImage(parentActivity.getContentResolver(), bitmap, showTop.getText().toString(),
 				showBottom.getText().toString());
 	}
 	
@@ -165,8 +169,8 @@ public class CreateMemeFragment extends Activity {
 	 * Bakcend.saveToParse(Bitmap, String, String) method.
 	 */
 	public void post() {
-		ImageView image = (ImageView) findViewById(R.id.meme_image);
-		Log.d("post()", (image==null)+ "image view is");
+		ImageView image = (ImageView) getActivity().findViewById(R.id.meme_image);
+
 		// refresh cache.
 		image.setDrawingCacheEnabled(false);
 		image.setDrawingCacheEnabled(true);
@@ -227,7 +231,6 @@ public class CreateMemeFragment extends Activity {
 			// do your stuff
 
 		}
-
 	};
 
 }

@@ -5,19 +5,19 @@ package com.example.frogling;
 
 import utilities.BackEnd;
 import android.app.Activity;
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
@@ -25,18 +25,23 @@ import com.parse.ParseObject;
  * @author tal11
  * 
  */
-public class ViewSingleFragment extends Activity {
+public class ViewSingleFragment extends Fragment {
+
+	protected Activity parentActivity;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.view_single_meme);
-		ParseAnalytics.trackAppOpened(getIntent());
-
-		showNextMeme();
 		
+		return inflater.inflate(R.layout.view_single_meme, container, false);
+	}
 
-		Button nextButton = (Button) findViewById(R.id.view_next_button);
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		setHasOptionsMenu(true);
+		
+		Button nextButton = (Button) getActivity().findViewById(R.id.view_next_button);
 		nextButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -47,17 +52,26 @@ public class ViewSingleFragment extends Activity {
 		});
 	}
 
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		// MenuItem upload_item = menu.findItem(R.id.action_upload);
+		// upload_item.setVisible(false);
+	}
+
+
 	/**
 	 * Shows the next meme from the meme query, uses the BackEnd.getNextMeme()
 	 * to get memes.
 	 */
 	public void showNextMeme() {
-
 		ParseObject object = BackEnd.getNextMeme();
 		if (object != null) {
-			ImageView viewedImage = (ImageView) findViewById(R.id.view_meme_image);
-			TextView viewedTopText = (TextView) findViewById(R.id.view_top_text);
-			TextView viewedBottomText = (TextView) findViewById(R.id.view_bottom_text);
+			ImageView viewedImage = (ImageView) getActivity().findViewById(
+					R.id.view_meme_image);
+			TextView viewedTopText = (TextView) getActivity().findViewById(
+					R.id.view_top_text);
+			TextView viewedBottomText = (TextView) getActivity().findViewById(
+					R.id.view_bottom_text);
 			try {
 				Bitmap map = BackEnd.convertByteToBit(((ParseFile) object
 						.get(BackEnd.IMAGE_KEY)).getData());
