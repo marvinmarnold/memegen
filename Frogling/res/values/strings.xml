@@ -8,4 +8,5 @@
 	<string name="bottom_text_here">Bottom Text Here</string>
 	<string name="menu_share">Share</string>
 	<string name="menu_upload">Upload</string>
+	<string name="enter_hashtag">Enter #hashtag</string>
 </resources>

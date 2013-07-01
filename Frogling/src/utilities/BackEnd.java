@@ -25,6 +25,7 @@ public abstract class BackEnd {
 	public static final String BOTTOM_TEXT = "BOTTOM_TEXT";
 	public static final String TIME_STAMP = "TS";
 	public static final String IMAGE_FILE = "IMAGE_FILE.png";
+	public static final String HASH_TAG = "HASH_TAG";
 
 	/* ParseQuery to load memes from, needs to be initialized */
 	private static ParseQuery<ParseObject> currentQuery = null;
@@ -56,7 +57,7 @@ public abstract class BackEnd {
 	 *            flow.
 	 */
 	public static void saveToParse(Bitmap imageBitmap, String topText,
-			String bottomText) {
+			String bottomText, String hashtag) {
 		//Create ParseObject:
 		ParseObject saveMeme = new ParseObject(PARSE_KEY);
 		//Save imageBitmap as a ParseFile to use in the ParseObject:
@@ -69,6 +70,7 @@ public abstract class BackEnd {
 		saveMeme.put(TOP_TEXT, topText);
 		saveMeme.put(BOTTOM_TEXT, bottomText);
 		saveMeme.put(TIME_STAMP, System.currentTimeMillis());
+		saveMeme.put(HASH_TAG, hashtag);
 		saveMeme.saveInBackground();
 	}
 

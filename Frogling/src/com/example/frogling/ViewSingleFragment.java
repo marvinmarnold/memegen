@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -54,8 +55,14 @@ public class ViewSingleFragment extends Fragment {
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		// MenuItem upload_item = menu.findItem(R.id.action_upload);
-		// upload_item.setVisible(false);
+		
+		MenuItem upload_item = menu.findItem(R.id.action_upload);
+		upload_item.setVisible(false);
+		
+		MenuItem post_item = menu.findItem(R.id.action_save_to_parse);
+		post_item.setVisible(false);
+		
+		
 	}
 
 
