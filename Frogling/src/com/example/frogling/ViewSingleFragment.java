@@ -26,7 +26,7 @@ import com.parse.ParseObject;
  * @author tal11
  * 
  */
-public class ViewSingleFragment extends Fragment {
+public class ViewSingleFragment extends Fragment{
 
 	protected Activity parentActivity;
 
@@ -34,7 +34,6 @@ public class ViewSingleFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		return inflater.inflate(R.layout.view_single_meme, container, false);
 	}
 
@@ -59,9 +58,6 @@ public class ViewSingleFragment extends Fragment {
 
 		MenuItem upload_item = menu.findItem(R.id.action_upload);
 		upload_item.setVisible(false);
-
-		MenuItem post_item = menu.findItem(R.id.action_save_to_parse);
-		post_item.setVisible(false);
 	}
 
 	/**

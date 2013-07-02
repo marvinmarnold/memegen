@@ -35,7 +35,7 @@ public abstract class BackEnd {
 
 	/* ParseQuery to load memes from, needs to be initialized */
 	private static ParseQuery<ParseObject> currentQuery = null;
-	private static int currentIndex = 0; // The index of the meme to return.
+	private static int currentIndex = -1; // The index of the meme to return.
 	private static int totalFroglings = -1; // Number of Froglings stored in
 											// Parse backend.
 
@@ -119,6 +119,23 @@ public abstract class BackEnd {
 	}
 
 	/**
+	 * Initializes a Meme item ParseQuery into currentQuery, then counts the
+	 * amount of memes in query and resets currentIndex to 0.
+	 */
+	public static void initializeFroglingBrowser() {
+		currentQuery = ParseQuery.getQuery(PARSE_KEY);
+		try {
+			totalFroglings = currentQuery.count();
+			Log.d("BrowserInit)", totalFroglings + " objects in query");
+			currentQuery.addAscendingOrder(TIME_STAMP);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		currentIndex = 0;
+	}
+
+	/**
 	 * Gets the next meme from the query, then increases current (static field)
 	 * by 1. If current exceeded the query size, re-initializes the query and
 	 * resets current to 0.
@@ -127,23 +144,10 @@ public abstract class BackEnd {
 	 *         ParseQuery not initialized or is empty.
 	 */
 	public static ParseObject getNextMeme() {
-		// Get query:
-		currentQuery = ParseQuery.getQuery(PARSE_KEY);
 		try {
-			// gets query size:
-			totalFroglings = currentQuery.count();
-			Log.d("getNextMeme()", totalFroglings + " objects in query");
-			if (totalFroglings <= 0) {
-				return null;
-			}
-			// Orders query and gets current meme:
-			currentQuery.addDescendingOrder(TIME_STAMP);
 			currentQuery.setSkip(currentIndex);
 			ParseObject nextMeme = currentQuery.getFirst();
-
-			// Updates index:
 			currentIndex++;
-			// Resets index if neccassry:
 			if (currentIndex >= totalFroglings) {
 				currentIndex = 0;
 			}
@@ -156,5 +160,4 @@ public abstract class BackEnd {
 		// if had errors, will return null
 		return null;
 	}
-
 }

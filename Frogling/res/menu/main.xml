@@ -13,9 +13,5 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/menu_share">
-    </item>    
-    <item 
-        android:id="@+id/action_save_to_parse"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="Post"/>
+    </item>
 </menu>

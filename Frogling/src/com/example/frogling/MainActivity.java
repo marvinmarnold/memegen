@@ -1,5 +1,6 @@
 package com.example.frogling;
 
+import utilities.BackEnd;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -37,7 +38,10 @@ public class MainActivity extends Activity {
 						new TabListener<CreateMemeFragment>(this, "create",
 								CreateMemeFragment.class)));
 		Log.d("CreateMainActivity", "First try");
-
+		
+		//Initializes ParseQuery for explore option:
+		BackEnd.initializeFroglingBrowser();
+		
 		bar.addTab(bar
 				.newTab()
 				.setText("Explore")

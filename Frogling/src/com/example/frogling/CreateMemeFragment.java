@@ -25,7 +25,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -42,6 +44,7 @@ public class CreateMemeFragment extends Fragment {
 	protected Activity parentActivity;
 	public EditText hashtagEdit;
 	public String hashtag;
+	public Button postButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,6 +74,15 @@ public class CreateMemeFragment extends Fragment {
 		showTop = (TextView) getActivity().findViewById(R.id.top_text);
 		showBottom = (TextView) getActivity().findViewById(R.id.bottom_text);
 
+		postButton = (Button) getActivity().findViewById(R.id.post_button);
+		postButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				post();
+			}
+		});
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -93,9 +105,6 @@ public class CreateMemeFragment extends Fragment {
 					SELECT_PICTURE);
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"picking an image from gallery", Toast.LENGTH_LONG).show();
-			return true;
-		case R.id.action_save_to_parse:
-			post();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
