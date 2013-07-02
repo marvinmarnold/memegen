@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/LinearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/Black"
-    android:orientation="vertical" >
+    android:paddingTop="20dp" >
 
-    <EditText
-        android:id="@+id/top_text_edit"
+    <LinearLayout
+        android:id="@+id/LinearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/top_text_here"
-        android:textColor="@color/White" />
+        android:orientation="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbars="vertical" >
+
+	<LinearLayout
+            android:layout_width="0px"
+            android:layout_height="0px"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <EditText
+            android:id="@+id/top_text_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/top_text_here"
+            android:nextFocusLeft="@id/top_text_edit"
+            android:nextFocusUp="@id/top_text_edit"
+            android:textColor="@color/White" />
 
     <EditText
         android:id="@+id/bottom_text_edit"
@@ -22,16 +37,19 @@
         android:textColor="@color/White" />
 
     <RelativeLayout
-        android:id="@+id/meme"
+        android:id="@+id/actual_frogling"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" >
+        android:layout_marginTop="20dp"
+        android:orientation="vertical" >
 
         <ImageView
             android:id="@+id/meme_image"
-            android:layout_width="320dp"
-            android:layout_height="320dp"
-            android:layout_centerInParent="true"
+            android:layout_width="290dp"
+            android:layout_height="322dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@string/meme"
             android:scaleType="centerCrop"
             android:src="@drawable/firstmeme" />
 
@@ -41,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
+            android:layout_marginTop="18dp"
             android:gravity="center"
             android:paddingTop="10dp"
             android:shadowColor="@android:color/black"
@@ -48,16 +67,16 @@
             android:shadowDy="5"
             android:shadowRadius="5"
             android:textColor="#FFFFFF"
-            android:textSize="32dp"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/bottom_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/meme_image"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="14dp"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
             android:paddingTop="10dp"
             android:shadowColor="@android:color/black"
@@ -65,14 +84,27 @@
             android:shadowDy="5"
             android:shadowRadius="5"
             android:textColor="#FFFFFF"
-            android:textSize="32dp"
+            android:textSize="32sp"
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:text="Done" />
+    <RelativeLayout
+        android:id="@+id/meme"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" >
 
-</LinearLayout>
+        <Button
+            android:id="@+id/post_button"
+            style="@style/button_text"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/green_button"
+            android:text="@string/done" />
+    </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>
