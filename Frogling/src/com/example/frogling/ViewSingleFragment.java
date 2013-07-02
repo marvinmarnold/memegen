@@ -34,15 +34,16 @@ public class ViewSingleFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		return inflater.inflate(R.layout.view_single_meme, container, false);
 	}
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		
-		Button nextButton = (Button) getActivity().findViewById(R.id.view_next_button);
+
+		Button nextButton = (Button) getActivity().findViewById(
+				R.id.view_next_button);
 		nextButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -55,13 +56,13 @@ public class ViewSingleFragment extends Fragment {
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		 MenuItem upload_item = menu.findItem(R.id.action_upload);
-		 upload_item.setVisible(false);
-		 
-		 MenuItem post_item = menu.findItem(R.id.action_save_to_parse);
-		 post_item.setVisible(false);
-	}
 
+		MenuItem upload_item = menu.findItem(R.id.action_upload);
+		upload_item.setVisible(false);
+
+		MenuItem post_item = menu.findItem(R.id.action_save_to_parse);
+		post_item.setVisible(false);
+	}
 
 	/**
 	 * Shows the next meme from the meme query, uses the BackEnd.getNextMeme()

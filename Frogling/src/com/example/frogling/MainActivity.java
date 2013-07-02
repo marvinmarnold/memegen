@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
@@ -23,31 +24,33 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		Parse.initialize(this, "AyjtKEZBNR17lzzKJ5LBAQrnb86hNFUNe6eAJ55T",
 				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
 		ParseAnalytics.trackAppOpened(getIntent());
-
 		final ActionBar bar = getActionBar();
 		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
-
 		bar.addTab(bar
 				.newTab()
 				.setText("Create")
 				.setTabListener(
 						new TabListener<CreateMemeFragment>(this, "create",
 								CreateMemeFragment.class)));
+		Log.d("CreateMainActivity", "First try");
+
 		bar.addTab(bar
 				.newTab()
 				.setText("Explore")
 				.setTabListener(
 						new TabListener<ViewSingleFragment>(this, "explore",
 								ViewSingleFragment.class)));
+		Log.d("CreateMainActivity", "Second try");
 
 		if (savedInstanceState != null) {
 			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
 		}
+		Log.d("CreateMainActivity", "Third try");
+
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {

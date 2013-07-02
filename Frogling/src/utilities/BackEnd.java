@@ -1,13 +1,17 @@
 package utilities;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -25,6 +29,9 @@ public abstract class BackEnd {
 	public static final String BOTTOM_TEXT = "BOTTOM_TEXT";
 	public static final String TIME_STAMP = "TS";
 	public static final String IMAGE_FILE = "IMAGE_FILE.png";
+	public static final String HASH_TAG = "HASH_TAG";
+	static int imageWidth = 250;
+	static int imageHeight = 250;
 
 	/* ParseQuery to load memes from, needs to be initialized */
 	private static ParseQuery<ParseObject> currentQuery = null;
@@ -56,19 +63,20 @@ public abstract class BackEnd {
 	 *            flow.
 	 */
 	public static void saveToParse(Bitmap imageBitmap, String topText,
-			String bottomText) {
-		//Create ParseObject:
+			String bottomText, String hashtag) {
+		// Create ParseObject:
 		ParseObject saveMeme = new ParseObject(PARSE_KEY);
-		//Save imageBitmap as a ParseFile to use in the ParseObject:
+		// Save imageBitmap as a ParseFile to use in the ParseObject:
 		ParseFile parseImage = new ParseFile(IMAGE_FILE,
 				BackEnd.convertBitToByte(imageBitmap));
 		parseImage.saveInBackground();
-		
-		//Saves all values of the meme:
+
+		// Saves all values of the meme:
 		saveMeme.put(IMAGE_KEY, parseImage);
 		saveMeme.put(TOP_TEXT, topText);
 		saveMeme.put(BOTTOM_TEXT, bottomText);
 		saveMeme.put(TIME_STAMP, System.currentTimeMillis());
+		saveMeme.put(HASH_TAG, hashtag);
 		saveMeme.saveInBackground();
 	}
 
@@ -80,8 +88,9 @@ public abstract class BackEnd {
 	 * @return byte[] which represents the image.
 	 */
 	public static byte[] convertBitToByte(Bitmap memeMap) {
+		Bitmap compressedMemeMap = resize(memeMap);
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		memeMap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		compressedMemeMap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 		return stream.toByteArray();
 	}
 
@@ -94,8 +103,19 @@ public abstract class BackEnd {
 	 * @return a Bitmap representing the given byte[]
 	 */
 	public static Bitmap convertByteToBit(byte[] savedImage) {
-		Bitmap retVal = BitmapFactory.decodeByteArray(savedImage, 0, savedImage.length);
+		Bitmap retVal = BitmapFactory.decodeByteArray(savedImage, 0,
+				savedImage.length);
 		return retVal;
+	}
+
+	private static Bitmap resize(Bitmap originalBitmap) {
+		float factorH = imageHeight / (float) originalBitmap.getHeight();
+		float factorW = imageWidth / (float) originalBitmap.getWidth();
+		float factorToUse = (factorH > factorW) ? factorW : factorH;
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap,
+				(int) (originalBitmap.getWidth() * factorToUse),
+				(int) (originalBitmap.getHeight() * factorToUse), false);
+		return resizedBitmap;
 	}
 
 	/**
@@ -107,23 +127,23 @@ public abstract class BackEnd {
 	 *         ParseQuery not initialized or is empty.
 	 */
 	public static ParseObject getNextMeme() {
-		//Get query:
+		// Get query:
 		currentQuery = ParseQuery.getQuery(PARSE_KEY);
 		try {
-			//gets query size:
+			// gets query size:
 			totalFroglings = currentQuery.count();
-			Log.d("getNextMeme()", totalFroglings+ " objects in query");
+			Log.d("getNextMeme()", totalFroglings + " objects in query");
 			if (totalFroglings <= 0) {
 				return null;
 			}
-			//Orders query and gets current meme:
+			// Orders query and gets current meme:
 			currentQuery.addDescendingOrder(TIME_STAMP);
 			currentQuery.setSkip(currentIndex);
 			ParseObject nextMeme = currentQuery.getFirst();
-			
-			//Updates index:
+
+			// Updates index:
 			currentIndex++;
-			//Resets index if neccassry:
+			// Resets index if neccassry:
 			if (currentIndex >= totalFroglings) {
 				currentIndex = 0;
 			}
@@ -133,7 +153,8 @@ public abstract class BackEnd {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//if had errors, will return null
+		// if had errors, will return null
 		return null;
 	}
+
 }
