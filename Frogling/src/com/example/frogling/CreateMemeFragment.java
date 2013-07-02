@@ -197,18 +197,26 @@ public class CreateMemeFragment extends Fragment {
 	 * A method for checking the validity of the inserted #hashtag. The user
 	 * MUST insert a #hashtag when adding a photo, starting with "#" and
 	 * containing no spaces.
-	 * 
 	 */
-
 	public boolean isHashtagValid() {
 		parentActivity = getActivity();
 
+		if (hashtag == null) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"You should insert a hashtag", Toast.LENGTH_LONG).show();
+			return false;
+		}
 		if (hashtag.isEmpty()) {
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"You should insert a hashtag", Toast.LENGTH_LONG).show();
 			return false;
 
 		}
+
+		while (hashtag.charAt(hashtag.length() - 1) == ' ') {
+			hashtag = hashtag.substring(0, hashtag.length() - 1);
+		}
+
 		if (!hashtag.startsWith("#")) {
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"Invalid hashtag: Does not start with #.",
