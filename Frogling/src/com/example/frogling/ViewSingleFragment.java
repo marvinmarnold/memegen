@@ -12,8 +12,11 @@ import java.util.TimeZone;
 import utilities.BackEnd;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore.Images.Media;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +46,6 @@ public class ViewSingleFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		return inflater.inflate(R.layout.view_single_meme, container, false);
 	}
 
@@ -62,19 +65,11 @@ public class ViewSingleFragment extends Fragment {
 		});
 	}
 
-	/**
-	 * 
-	 * @param unix_timestamp
-	 * @return
-	 * @throws ParseException
-	 */
-
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
+
 		MenuItem upload_item = menu.findItem(R.id.action_upload);
 		upload_item.setVisible(false);
-		MenuItem post_item = menu.findItem(R.id.action_save_to_parse);
-		post_item.setVisible(false);
 	}
 
 	/**
@@ -91,6 +86,9 @@ public class ViewSingleFragment extends Fragment {
 					R.id.view_top_text);
 			TextView viewedBottomText = (TextView) getActivity().findViewById(
 					R.id.view_bottom_text);
+
+			TextView viewedHashtag = (TextView) getActivity().findViewById(
+					R.id.hashtag);
 			TextView createdTime = (TextView) getActivity().findViewById(
 					R.id.time_stamp);
 			try {
@@ -98,6 +96,7 @@ public class ViewSingleFragment extends Fragment {
 						.get(BackEnd.IMAGE_KEY)).getData());
 				String topText = (String) object.get(BackEnd.TOP_TEXT);
 				String bottomText = (String) object.get(BackEnd.BOTTOM_TEXT);
+				String hashtagText = (String) object.get(BackEnd.HASH_TAG);
 				long timeInMilli = (Long) object.get(BackEnd.TIME_STAMP);
 
 				// Toast.makeText(getActivity(), unixToDate(timeInMilli),
@@ -106,6 +105,7 @@ public class ViewSingleFragment extends Fragment {
 				viewedImage.setImageBitmap(map);
 				viewedTopText.setText(topText);
 				viewedBottomText.setText(bottomText);
+				viewedHashtag.setText(hashtagText);
 				createdTime.setText(unixToDate(timeInMilli));
 
 			} catch (Exception e) {
@@ -119,10 +119,10 @@ public class ViewSingleFragment extends Fragment {
 
 	public String unixToDate(long timestamp_in_mill) {
 		Date date = new Date(timestamp_in_mill);
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("dd-MM-yyyy , HH:mm");
 		df.setTimeZone(TimeZone.getDefault());
 		String dateStr = df.format(date);
-
 		return dateStr;
 	}
+
 }

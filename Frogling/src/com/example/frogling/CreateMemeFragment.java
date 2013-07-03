@@ -25,7 +25,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -40,6 +42,9 @@ public class CreateMemeFragment extends Fragment {
 	public TextView showBottom;
 	private static final int SELECT_PICTURE = 1;
 	protected Activity parentActivity;
+	public EditText hashtagEdit;
+	public String hashtag;
+	public Button postButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,13 +65,24 @@ public class CreateMemeFragment extends Fragment {
 		resultTop = (EditText) getActivity().findViewById(R.id.top_text_edit);
 		resultBottom = (EditText) getActivity().findViewById(
 				R.id.bottom_text_edit);
+		hashtagEdit = (EditText) getActivity().findViewById(R.id.hashtag_edit);
 
 		resultTop.addTextChangedListener(filterTopWatcher);
-		resultBottom.addTextChangedListener(filterButtomWatcher);
+		resultBottom.addTextChangedListener(filterBottomWatcher);
+		hashtagEdit.addTextChangedListener(filterHashTagWatcher);
 
 		showTop = (TextView) getActivity().findViewById(R.id.top_text);
 		showBottom = (TextView) getActivity().findViewById(R.id.bottom_text);
 
+		postButton = (Button) getActivity().findViewById(R.id.post_button);
+		postButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				post();
+			}
+		});
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -90,27 +106,24 @@ public class CreateMemeFragment extends Fragment {
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"picking an image from gallery", Toast.LENGTH_LONG).show();
 			return true;
-		case R.id.action_save_to_parse:
-			post();
-			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {		
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (data != null && data.getData() != null) {
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"onActivityResult()", Toast.LENGTH_LONG).show();
-			
+
 			if (requestCode == SELECT_PICTURE) {
-				
+
 				Toast.makeText(parentActivity.getApplicationContext(),
 						"select pic()", Toast.LENGTH_LONG).show();
-				
+
 				Uri selectedImageUri = data.getData();
 				InputStream imageStream;
 				try {
@@ -129,11 +142,15 @@ public class CreateMemeFragment extends Fragment {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} 
+			}
 		}
 	}
 
 	private void share() {
+		if (!isHashtagValid()) {
+			return;
+		}
+
 		String url = save();
 
 		if (url != null) {
@@ -151,7 +168,7 @@ public class CreateMemeFragment extends Fragment {
 
 	private String save() {
 		RelativeLayout meme = (RelativeLayout) getActivity().findViewById(
-				R.id.meme);
+				R.id.actual_frogling);
 
 		// force the refresh of the view drawing cache. meme is RelativeLayout.
 		meme.setDrawingCacheEnabled(false);
@@ -160,16 +177,21 @@ public class CreateMemeFragment extends Fragment {
 		Bitmap bitmap = Bitmap.createBitmap(meme.getDrawingCache());
 
 		// MediaStore insertImage().
-		return Media.insertImage(parentActivity.getContentResolver(), bitmap, showTop.getText().toString(),
-				showBottom.getText().toString());
+		return Media.insertImage(parentActivity.getContentResolver(), bitmap,
+				showTop.getText().toString(), showBottom.getText().toString());
 	}
-	
+
 	/**
 	 * Saves the meme on screen as a ParseObject, uses the
 	 * Bakcend.saveToParse(Bitmap, String, String) method.
 	 */
 	public void post() {
-		ImageView image = (ImageView) getActivity().findViewById(R.id.meme_image);
+		if (!isHashtagValid()) {
+			return;
+		}
+
+		ImageView image = (ImageView) getActivity().findViewById(
+				R.id.meme_image);
 
 		// refresh cache.
 		image.setDrawingCacheEnabled(false);
@@ -177,7 +199,48 @@ public class CreateMemeFragment extends Fragment {
 		// generate image Bitmap
 		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
 		BackEnd.saveToParse(memeMap, showTop.getText().toString(), showBottom
-				.getText().toString());
+				.getText().toString(), hashtag);
+	}
+
+	/**
+	 * A method for checking the validity of the inserted #hashtag. The user
+	 * MUST insert a #hashtag when adding a photo, starting with "#" and
+	 * containing no spaces.
+	 */
+	public boolean isHashtagValid() {
+		parentActivity = getActivity();
+
+		if (hashtag == null) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"You should insert a hashtag", Toast.LENGTH_LONG).show();
+			return false;
+		}
+		if (hashtag.isEmpty()) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"You should insert a hashtag", Toast.LENGTH_LONG).show();
+			return false;
+
+		}
+
+		while (hashtag.charAt(hashtag.length() - 1) == ' ') {
+			hashtag = hashtag.substring(0, hashtag.length() - 1);
+		}
+
+		if (!hashtag.startsWith("#")) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"Invalid hashtag: Does not start with #.",
+					Toast.LENGTH_LONG).show();
+			return false;
+		}
+
+		if (hashtag.contains(" ")) {
+			Toast.makeText(parentActivity.getApplicationContext(),
+					"Invalid hashtag: Contains spaces.", Toast.LENGTH_LONG)
+					.show();
+			return false;
+		}
+
+		return true;
 	}
 
 	private TextWatcher filterTopWatcher = new TextWatcher() {
@@ -207,7 +270,7 @@ public class CreateMemeFragment extends Fragment {
 
 	};
 
-	private TextWatcher filterButtomWatcher = new TextWatcher() {
+	private TextWatcher filterBottomWatcher = new TextWatcher() {
 
 		public void afterTextChanged(Editable s) {
 			// Do your stuff
@@ -233,4 +296,21 @@ public class CreateMemeFragment extends Fragment {
 		}
 	};
 
+	private TextWatcher filterHashTagWatcher = new TextWatcher() {
+
+		public void afterTextChanged(Editable s) {
+			hashtag = hashtagEdit.getText().toString();
+
+		}
+
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// do your stuff
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			// do your stuff
+		}
+	};
 }
