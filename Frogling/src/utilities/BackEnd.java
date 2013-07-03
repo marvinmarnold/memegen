@@ -1,17 +1,17 @@
 package utilities;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.frogling.R;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -30,6 +30,7 @@ public abstract class BackEnd {
 	public static final String TIME_STAMP = "TS";
 	public static final String IMAGE_FILE = "IMAGE_FILE.png";
 	public static final String HASH_TAG = "HASH_TAG";
+	private static final int TAG_AMOUNT = 4;
 	static int imageWidth = 250;
 	static int imageHeight = 250;
 
@@ -38,6 +39,9 @@ public abstract class BackEnd {
 	private static int currentIndex = -1; // The index of the meme to return.
 	private static int totalFroglings = -1; // Number of Froglings stored in
 											// Parse backend.
+	private static Object[] currentlyViewedMeme = null; // The meme object to be
+														// requested from the
+														// project.
 
 	/**
 	 * Saves a meme to the Parse cloud.
@@ -127,12 +131,13 @@ public abstract class BackEnd {
 		try {
 			totalFroglings = currentQuery.count();
 			Log.d("BrowserInit)", totalFroglings + " objects in query");
-			currentQuery.addAscendingOrder(TIME_STAMP);
+			currentQuery.addDescendingOrder(TIME_STAMP);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		currentIndex = 0;
+		currentlyViewedMeme = getNextMeme();
 	}
 
 	/**
@@ -140,10 +145,13 @@ public abstract class BackEnd {
 	 * by 1. If current exceeded the query size, re-initializes the query and
 	 * resets current to 0.
 	 * 
-	 * @return the next Meme, represented by a ParseObject object, or null, if
-	 *         ParseQuery not initialized or is empty.
+	 * @return the next Meme, represented by a Object[] object, or null, if
+	 *         ParseQuery not initialized or is empty. Object[] structure:
+	 *         Object[0] - Image Bitmap data. Object[1] - Top text Object[2] -
+	 *         Bottom text Object[3] - Hashtag.
+	 * 
 	 */
-	public static ParseObject getNextMeme() {
+	public static Object[] getNextMeme() {
 		try {
 			currentQuery.setSkip(currentIndex);
 			ParseObject nextMeme = currentQuery.getFirst();
@@ -151,7 +159,15 @@ public abstract class BackEnd {
 			if (currentIndex >= totalFroglings) {
 				currentIndex = 0;
 			}
-			return nextMeme;
+			Object[] retVal = new Object[TAG_AMOUNT];
+
+			retVal[0] = ((ParseFile) nextMeme.get(IMAGE_KEY)).getData();
+			retVal[1] = nextMeme.get(TOP_TEXT);
+			retVal[2] = nextMeme.get(BOTTOM_TEXT);
+			retVal[3] = nextMeme.get(HASH_TAG);
+			
+			currentlyViewedMeme = retVal;
+			return retVal;
 
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
@@ -160,4 +176,14 @@ public abstract class BackEnd {
 		// if had errors, will return null
 		return null;
 	}
+	
+	/**
+	 * Getter for currentlyViewedMeme.
+	 * @return the currentlyViewedMeme field.
+	 */
+	public static Object[] getCurrentMeme(){
+		return currentlyViewedMeme;
+	}
+	
+	
 }

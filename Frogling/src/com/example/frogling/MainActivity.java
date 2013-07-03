@@ -37,7 +37,6 @@ public class MainActivity extends Activity {
 				.setTabListener(
 						new TabListener<CreateMemeFragment>(this, "create",
 								CreateMemeFragment.class)));
-		Log.d("CreateMainActivity", "First try");
 		
 		//Initializes ParseQuery for explore option:
 		BackEnd.initializeFroglingBrowser();
@@ -48,12 +47,10 @@ public class MainActivity extends Activity {
 				.setTabListener(
 						new TabListener<ViewSingleFragment>(this, "explore",
 								ViewSingleFragment.class)));
-		Log.d("CreateMainActivity", "Second try");
 
 		if (savedInstanceState != null) {
 			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
 		}
-		Log.d("CreateMainActivity", "Third try");
 
 	}
 
