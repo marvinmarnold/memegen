@@ -1,17 +1,23 @@
 package utilities;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.TimeZone;
 
-import android.content.ContentResolver;
-import android.content.Intent;
+import javax.security.auth.callback.Callback;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.provider.MediaStore.Images.Media;
+import android.location.Address;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.frogling.R;
+import com.parse.CountCallback;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -27,21 +33,104 @@ public abstract class BackEnd {
 	public static final String IMAGE_KEY = "IMAGE_BITMAP";
 	public static final String TOP_TEXT = "TOP_TEXT";
 	public static final String BOTTOM_TEXT = "BOTTOM_TEXT";
-	public static final String TIME_STAMP = "TS";
 	public static final String IMAGE_FILE = "IMAGE_FILE.png";
 	public static final String HASH_TAG = "HASH_TAG";
-	private static final int TAG_AMOUNT = 4;
+	public static final int PAGE_SIZE = 6;
+	public static final int TAG_AMOUNT = 5;
+	public static final int MAX_STACK_SIZE = 2;
 	static int imageWidth = 250;
 	static int imageHeight = 250;
 
+	public static enum PopulateQueueMode {
+		BLOCKING_REFRESH, BLOCKING_NEXT, BACKGROUND_NEXT
+	}
+
+	private static int pageIndex = 0;
 	/* ParseQuery to load memes from, needs to be initialized */
 	private static ParseQuery<ParseObject> currentQuery = null;
-	private static int currentIndex = -1; // The index of the meme to return.
-	private static int totalFroglings = -1; // Number of Froglings stored in
-											// Parse backend.
 	private static Object[] currentlyViewedMeme = null; // The meme object to be
 														// requested from the
 														// project.
+	private static Queue<ParseObject> memeQueue = new LinkedList<ParseObject>();
+
+	public static Object[] getNextMeme() {
+		Log.d("Inside getNextMeme", pageIndex + " is the pageIndex");
+		Log.d("getNextMeme ", "found items, in queue: " + memeQueue.size());
+
+		ParseObject memeParseObject = memeQueue.poll();
+		if (memeQueue.size() < PAGE_SIZE / 2) {
+			Log.d("getNextmeme()", "calling populateQueue()");
+			populateQueueWithMemes(PopulateQueueMode.BACKGROUND_NEXT);
+		}
+		Object[] retVal = new Object[TAG_AMOUNT];
+		if (memeParseObject != null) {
+			try {
+				retVal[0] = ((ParseFile) memeParseObject.get(IMAGE_KEY))
+						.getData();
+				retVal[1] = memeParseObject.get(TOP_TEXT);
+				retVal[2] = memeParseObject.get(BOTTOM_TEXT);
+				retVal[3] = memeParseObject.get(HASH_TAG);
+				retVal[4] = memeParseObject.getCreatedAt();
+				Log.d("ParsingObject", "Time:" + retVal[4]);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			populateQueueWithMemes(PopulateQueueMode.BLOCKING_NEXT);
+		}
+
+		Log.d("getNextMeme ", "After return found items, in queue: "
+				+ memeQueue.size());
+		return retVal;
+	}
+
+	public static void populateQueueWithMemes(PopulateQueueMode populateMode) {
+		currentQuery = ParseQuery.getQuery(PARSE_KEY);
+
+		Log.d("Inside populateQueueWithMemes", pageIndex + " is the pageIndex");
+		currentQuery.orderByDescending("createdAt");
+		currentQuery.setLimit(PAGE_SIZE);
+
+		switch (populateMode) {
+		case BLOCKING_REFRESH:
+			pageIndex = 0;
+			currentQuery.setSkip(pageIndex * PAGE_SIZE);
+			try {
+				List<ParseObject> list = currentQuery.find();
+				if (list != null && list.size() > 0) {
+					memeQueue.clear();
+					memeQueue.addAll(list);
+					pageIndex++;
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case BACKGROUND_NEXT:
+			currentQuery.setSkip(pageIndex * PAGE_SIZE);
+			currentQuery.findInBackground(new FindCallback<ParseObject>() {
+
+				@Override
+				public void done(List<ParseObject> objects, ParseException e) {
+					// TODO Auto-generated method stub
+					if (objects != null && objects.size() > 0) {
+						memeQueue.addAll(objects);
+						pageIndex++;
+						Log.d("QueryDone", "found items, in queue: "
+								+ memeQueue.size());
+						Log.d("IndexUpdated", pageIndex + "is the pageIndex");
+					} else {
+						Log.d("QueueDone", "Reached the end of meme stream.");
+						pageIndex = 0;
+					}
+				}
+			});
+			break;
+		}
+	}
 
 	/**
 	 * Saves a meme to the Parse cloud.
@@ -79,7 +168,6 @@ public abstract class BackEnd {
 		saveMeme.put(IMAGE_KEY, parseImage);
 		saveMeme.put(TOP_TEXT, topText);
 		saveMeme.put(BOTTOM_TEXT, bottomText);
-		saveMeme.put(TIME_STAMP, System.currentTimeMillis());
 		saveMeme.put(HASH_TAG, hashtag);
 		saveMeme.saveInBackground();
 	}
@@ -107,6 +195,10 @@ public abstract class BackEnd {
 	 * @return a Bitmap representing the given byte[]
 	 */
 	public static Bitmap convertByteToBit(byte[] savedImage) {
+		if (savedImage == null) {
+			return null;
+		}
+
 		Bitmap retVal = BitmapFactory.decodeByteArray(savedImage, 0,
 				savedImage.length);
 		return retVal;
@@ -126,64 +218,30 @@ public abstract class BackEnd {
 	 * Initializes a Meme item ParseQuery into currentQuery, then counts the
 	 * amount of memes in query and resets currentIndex to 0.
 	 */
-	public static void initializeFroglingBrowser() {
-		currentQuery = ParseQuery.getQuery(PARSE_KEY);
-		try {
-			totalFroglings = currentQuery.count();
-			Log.d("BrowserInit)", totalFroglings + " objects in query");
-			currentQuery.addDescendingOrder(TIME_STAMP);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public static void initializeFroglingBrowser(boolean isRefresh) {
+		Log.d("initializeFroglingBrowser()", "calling populateQueue()");
+		if (isRefresh) {
+			populateQueueWithMemes(PopulateQueueMode.BLOCKING_REFRESH);
+		} else {
+			populateQueueWithMemes(PopulateQueueMode.BACKGROUND_NEXT);
 		}
-		currentIndex = 0;
-		currentlyViewedMeme = getNextMeme();
 	}
 
 	/**
-	 * Gets the next meme from the query, then increases current (static field)
-	 * by 1. If current exceeded the query size, re-initializes the query and
-	 * resets current to 0.
+	 * Converts time in millis into String form of that Date.
 	 * 
-	 * @return the next Meme, represented by a Object[] object, or null, if
-	 *         ParseQuery not initialized or is empty. Object[] structure:
-	 *         Object[0] - Image Bitmap data. Object[1] - Top text Object[2] -
-	 *         Bottom text Object[3] - Hashtag.
-	 * 
+	 * @param timestamp_in_mill
+	 *            - time stamp in millis: Sytstem.getCurrentTimeMillis()
+	 *            construct.
+	 * @return a String representing the date of the given time millis. (0 --> 1
+	 *         Jan 1970)
 	 */
-	public static Object[] getNextMeme() {
-		try {
-			currentQuery.setSkip(currentIndex);
-			ParseObject nextMeme = currentQuery.getFirst();
-			currentIndex++;
-			if (currentIndex >= totalFroglings) {
-				currentIndex = 0;
-			}
-			Object[] retVal = new Object[TAG_AMOUNT];
-
-			retVal[0] = ((ParseFile) nextMeme.get(IMAGE_KEY)).getData();
-			retVal[1] = nextMeme.get(TOP_TEXT);
-			retVal[2] = nextMeme.get(BOTTOM_TEXT);
-			retVal[3] = nextMeme.get(HASH_TAG);
-			
-			currentlyViewedMeme = retVal;
-			return retVal;
-
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// if had errors, will return null
-		return null;
+	public static String unixToDate(long timestamp_in_mill) {
+		Date date = new Date(timestamp_in_mill);
+		DateFormat df = new SimpleDateFormat("dd-MM-yyyy , HH:mm");
+		df.setTimeZone(TimeZone.getDefault());
+		String dateStr = df.format(date);
+		return dateStr;
 	}
-	
-	/**
-	 * Getter for currentlyViewedMeme.
-	 * @return the currentlyViewedMeme field.
-	 */
-	public static Object[] getCurrentMeme(){
-		return currentlyViewedMeme;
-	}
-	
-	
+
 }

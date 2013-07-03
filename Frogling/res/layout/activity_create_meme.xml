@@ -23,6 +23,7 @@
             android:id="@+id/top_text_edit"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:cursorVisible="true"
             android:hint="@string/top_text_here"
             android:nextFocusLeft="@id/top_text_edit"
             android:nextFocusUp="@id/top_text_edit"
@@ -52,7 +53,7 @@
                 android:contentDescription="@string/meme"
                 android:scaleType="centerCrop"
                 android:src="@drawable/firstmeme" />
-            
+
             <TextView
                 android:id="@+id/top_text"
                 android:layout_width="fill_parent"
@@ -86,34 +87,34 @@
                 android:textColor="#FFFFFF"
                 android:textSize="32sp"
                 android:textStyle="bold" />
-
         </RelativeLayout>
 
-        <EditText
-            android:id="@+id/hashtag_edit"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:textColor="#FFFFFF"
-            android:hint="@string/enter_hashtag" />
+    <EditText
+        android:id="@+id/hashtag_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="@string/enter_hashtag"
+        android:textColor="#FFFFFF" />
 
-        <RelativeLayout
-            android:id="@+id/meme"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp" >
+    <RelativeLayout
+        android:id="@+id/meme"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" >
 
-            <Button
-                android:id="@+id/post_button"
-                style="@style/button_text"
-                android:layout_width="130dp"
-                android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/green_button"
-                android:text="@string/done" />
-        </RelativeLayout>
+        <Button
+            android:id="@+id/post_button"
+            style="@style/button_text"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/green_button"
+            android:text="@string/done" />
+    </RelativeLayout>
+
     </LinearLayout>
-
+  
 </ScrollView>

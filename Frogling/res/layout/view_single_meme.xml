@@ -1,76 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activitylayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/Black" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/Black"
+    android:paddingTop="20dp" >
 
-    <RelativeLayout
-        android:id="@+id/meme_viewed"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" >
+    <LinearLayout
+        android:id="@+id/activitylayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/Black"
+        android:orientation="vertical" >
 
-        <ImageView
-            android:id="@+id/view_meme_image"
-            android:layout_width="320dp"
-            android:layout_height="320dp"
-            android:layout_centerInParent="true"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/meme"
-            android:src="@drawable/firstmeme" />
-
-        <TextView
-            android:id="@+id/view_top_text"
+        <RelativeLayout
+            android:id="@+id/meme_viewed"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:gravity="center"
-            android:paddingTop="10dp"
-            android:shadowColor="@android:color/black"
-            android:shadowDx="5"
-            android:shadowDy="5"
-            android:shadowRadius="5"
-            android:text="@string/hello_world"
-            android:textColor="#FFFFFF"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="20dp" >
 
-        <TextView
-            android:id="@+id/view_bottom_text"
+            <ImageView
+                android:id="@+id/view_meme_image"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/meme"
+                android:scaleType="centerCrop"
+                android:src="@drawable/firstmeme" />
+
+            <TextView
+                android:id="@+id/view_top_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
+                android:text="@string/hello_world"
+                android:textColor="#FFFFFF"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/view_bottom_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/view_meme_image"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="14dp"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
+                android:text="@string/app_name"
+                android:textColor="#FFFFFF"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/view_meme_image"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="14dp"
-            android:gravity="center"
-            android:paddingTop="10dp"
-            android:shadowColor="@android:color/black"
-            android:shadowDx="5"
-            android:shadowDy="5"
-            android:shadowRadius="5"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="32sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-    
-    <RelativeLayout
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/hashtag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"
+                android:gravity="right"
+                android:text="@string/date"
+                android:textColor="#707070"
+                android:textSize="14dp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/time_stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="@string/hashtag"
+                android:textColor="#FFFFFF"
+                android:textSize="14dp"
+                android:textStyle="italic" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/meme_overview"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/view_next_button"
-                    android:layout_width="130dp"
-                    android:layout_height="50dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/green_button"
-                    android:text="@string/next"
-                    style="@style/button_text" />
-    </RelativeLayout>
+            <Button
+                android:id="@+id/view_next_button"
+                style="@style/button_text"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/green_button"
+                android:text="@string/next" />
+        </RelativeLayout>
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

@@ -38,8 +38,8 @@ public class MainActivity extends Activity {
 						new TabListener<CreateMemeFragment>(this, "create",
 								CreateMemeFragment.class)));
 		
-		//Initializes ParseQuery for explore option:
-		BackEnd.initializeFroglingBrowser();
+		// Initializes ParseQuery for explore option:
+		BackEnd.initializeFroglingBrowser(false);
 		
 		bar.addTab(bar
 				.newTab()
@@ -117,4 +117,5 @@ public class MainActivity extends Activity {
 			Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
 		}
 	}
+
 }
