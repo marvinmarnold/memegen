@@ -68,7 +68,7 @@ public class ViewSingleFragment extends Fragment {
 		});
 
 		// shows the current meme gotten from the BackEnd:
-		//showMeme();
+		// showMeme();
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -111,31 +111,26 @@ public class ViewSingleFragment extends Fragment {
 			TextView createdTime = (TextView) getActivity().findViewById(
 					R.id.time_stamp);
 
-				Bitmap map = BackEnd.convertByteToBit((byte[]) shownMeme[0]);
-				String topText = (String) shownMeme[1];
-				String bottomText = (String) shownMeme[2];
+			Bitmap map = (Bitmap) shownMeme[0];
+			String topText = (String) shownMeme[1];
+			String bottomText = (String) shownMeme[2];
 
-				String hashtagText = (String) shownMeme[3];
-				Date uploadDate = (Date) shownMeme[4];
+			String hashtagText = (String) shownMeme[3];
+			Date uploadDate = (Date) shownMeme[4];
 
-				// Toast.makeText(getActivity(), unixToDate(timeInMilli),
-				// Toast.LENGTH_LONG).show();
+			// Toast.makeText(getActivity(), unixToDate(timeInMilli),
+			// Toast.LENGTH_LONG).show();
 
-				viewedImage.setImageBitmap(map);
-				viewedTopText.setText(topText);
-				viewedBottomText.setText(bottomText);
-				viewedHashtag.setText(hashtagText);
-				createdTime.setText(uploadDate.toString());
-				
+			viewedImage.setImageBitmap(map);
+			viewedTopText.setText(topText);
+			viewedBottomText.setText(bottomText);
+			viewedHashtag.setText(hashtagText);
+			createdTime.setText(uploadDate.toString());
+
+		} else {
+			Toast.makeText(getActivity(), "Frogling fetch in progress...",
+					Toast.LENGTH_LONG).show();
 		}
-	}
-
-	/**
-	 * Gets the next meme object from the Parse cloud and assigns it to the
-	 * memeObject field.
-	 */
-	public void forwardMemeObject() {
-		BackEnd.getNextMeme();
 	}
 
 }
