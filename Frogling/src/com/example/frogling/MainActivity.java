@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
 		}
 
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
 		}
 	}
 

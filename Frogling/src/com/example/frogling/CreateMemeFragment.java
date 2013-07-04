@@ -103,8 +103,8 @@ public class CreateMemeFragment extends Fragment {
 			startActivityForResult(
 					Intent.createChooser(intent, "Select Picture"),
 					SELECT_PICTURE);
-			Toast.makeText(parentActivity.getApplicationContext(),
-					"picking an image from gallery", Toast.LENGTH_LONG).show();
+//			Toast.makeText(parentActivity.getApplicationContext(),
+//					"picking an image from gallery", Toast.LENGTH_LONG).show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -116,13 +116,13 @@ public class CreateMemeFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (data != null && data.getData() != null) {
-			Toast.makeText(parentActivity.getApplicationContext(),
-					"onActivityResult()", Toast.LENGTH_LONG).show();
+//			Toast.makeText(parentActivity.getApplicationContext(),
+//					"onActivityResult()", Toast.LENGTH_LONG).show();
 
 			if (requestCode == SELECT_PICTURE) {
 
-				Toast.makeText(parentActivity.getApplicationContext(),
-						"select pic()", Toast.LENGTH_LONG).show();
+//				Toast.makeText(parentActivity.getApplicationContext(),
+//						"select pic()", Toast.LENGTH_LONG).show();
 
 				Uri selectedImageUri = data.getData();
 				InputStream imageStream;
@@ -161,8 +161,7 @@ public class CreateMemeFragment extends Fragment {
 			startActivity(Intent.createChooser(shareIntent,
 					getString(R.string.menu_share)));
 		} else {
-			Toast.makeText(parentActivity.getApplicationContext(),
-					"Url: " + url, Toast.LENGTH_LONG).show();
+//			Log.d("Share", "URL null error");
 		}
 	}
 
@@ -210,16 +209,10 @@ public class CreateMemeFragment extends Fragment {
 	public boolean isHashtagValid() {
 		parentActivity = getActivity();
 
-		if (hashtag == null) {
+		if (hashtag == null || hashtag.isEmpty()) {
 			Toast.makeText(parentActivity.getApplicationContext(),
 					"You should insert a hashtag", Toast.LENGTH_LONG).show();
 			return false;
-		}
-		if (hashtag.isEmpty()) {
-			Toast.makeText(parentActivity.getApplicationContext(),
-					"You should insert a hashtag", Toast.LENGTH_LONG).show();
-			return false;
-
 		}
 
 		while (hashtag.charAt(hashtag.length() - 1) == ' ') {
