@@ -25,7 +25,7 @@
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/meme"
                 android:scaleType="centerCrop"
-                android:src="@drawable/firstmeme" />
+                android:src="@drawable/logohomepage" />
 
             <TextView
                 android:id="@+id/view_top_text"
