@@ -12,6 +12,6 @@
 	<string name="done">Post</string>
 	<string name="next">Next</string>
 	<string name="enter_hashtag">Enter #hashtag</string>
-	<string name="hashtag">hashtag</string>
+	<string name="hashtag">#hashtag</string>
 	<string name="date">date</string>
 </resources>

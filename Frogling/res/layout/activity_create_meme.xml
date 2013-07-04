@@ -52,7 +52,7 @@
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/meme"
                 android:scaleType="centerCrop"
-                android:src="@drawable/firstmeme" />
+                android:src="@drawable/logohomepage" />
 
             <TextView
                 android:id="@+id/top_text"

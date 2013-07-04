@@ -72,11 +72,10 @@
                 android:id="@+id/hashtag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_margin="5dp"
                 android:gravity="right"
-                android:text="@string/date"
-                android:textColor="#707070"
+                android:text="@string/hashtag"
+                android:textColor="#FFFFFF"
                 android:textSize="14dp"
                 android:textStyle="italic" />
 
@@ -84,10 +83,11 @@
                 android:id="@+id/time_stamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_margin="5dp"
                 android:gravity="center"
-                android:text="@string/hashtag"
-                android:textColor="#FFFFFF"
+                android:text="@string/date"
+                android:textColor="#707070"
                 android:textSize="14dp"
                 android:textStyle="italic" />
         </RelativeLayout>
