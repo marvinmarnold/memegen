@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import utilities.BackEnd;
+import utilities.BackEnd.PopulateQueueMode;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -63,12 +64,9 @@ public class ViewSingleFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				showMeme();
+				showMeme(PopulateQueueMode.BACKGROUND_NEXT);
 			}
 		});
-
-		// shows the current meme gotten from the BackEnd:
-		// showMeme();
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -83,8 +81,7 @@ public class ViewSingleFragment extends Fragment {
 		case R.id.action_share:
 			return true;
 		case R.id.action_refresh:
-			BackEnd.initializeFroglingBrowser(true);
-			showMeme();
+			showMeme(PopulateQueueMode.REFRESH);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -96,8 +93,8 @@ public class ViewSingleFragment extends Fragment {
 	 * Shows the meme from BackEnd.getCurrentMeme() in the current activity
 	 * view.
 	 */
-	public void showMeme() {
-		Object[] shownMeme = BackEnd.getNextMeme();
+	public void showMeme(PopulateQueueMode populateMode) {
+		Object[] shownMeme = BackEnd.getNextMeme(populateMode);
 
 		if (shownMeme != null && shownMeme.length > 0) {
 			ImageView viewedImage = (ImageView) getActivity().findViewById(
@@ -114,7 +111,6 @@ public class ViewSingleFragment extends Fragment {
 			Bitmap map = (Bitmap) shownMeme[0];
 			String topText = (String) shownMeme[1];
 			String bottomText = (String) shownMeme[2];
-
 			String hashtagText = (String) shownMeme[3];
 			Date uploadDate = (Date) shownMeme[4];
 
@@ -127,10 +123,7 @@ public class ViewSingleFragment extends Fragment {
 			viewedHashtag.setText(hashtagText);
 			createdTime.setText(uploadDate.toString());
 
-		} else {
-			Toast.makeText(getActivity(), "Frogling fetch in progress...",
-					Toast.LENGTH_LONG).show();
-		}
+		} 
 	}
 
 }

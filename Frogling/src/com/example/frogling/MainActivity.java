@@ -1,6 +1,7 @@
 package com.example.frogling;
 
 import utilities.BackEnd;
+import utilities.BackEnd.PopulateQueueMode;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -38,8 +39,8 @@ public class MainActivity extends Activity {
 						new TabListener<CreateMemeFragment>(this, "create",
 								CreateMemeFragment.class)));
 		
-		// Initializes ParseQuery for explore option:
-		BackEnd.initializeFroglingBrowser(false);
+		// Start a background job to fetch a few memes for the explore tab.
+		BackEnd.populateQueueWithMemes(PopulateQueueMode.REFRESH);
 		
 		bar.addTab(bar
 				.newTab()

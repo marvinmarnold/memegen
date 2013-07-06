@@ -3,6 +3,7 @@ package utilities;
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.TimeZone;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -20,7 +20,6 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 public abstract class BackEnd {
 
@@ -34,73 +33,70 @@ public abstract class BackEnd {
 	public static final String BOTTOM_TEXT = "BOTTOM_TEXT";
 	public static final String IMAGE_FILE = "IMAGE_FILE.png";
 	public static final String HASH_TAG = "HASH_TAG";
-	public static final int PAGE_SIZE = 10;
+	public static final int PAGE_SIZE = 6;
 	public static final int TAG_AMOUNT = 5;
 	public static final int MAX_STACK_SIZE = 2;
 	static int imageWidth = 250;
 	static int imageHeight = 250;
-	private static boolean backgroundFetchInProgress = false;
-	private static boolean refreshRequestMade = false;
+	private static int pageIndex = 0;
+	/* Currently pending background requests in progress. */
+	private static ArrayList<ParseQuery<ParseObject>> currentParseQueries = new ArrayList<ParseQuery<ParseObject>>();
+	private static ArrayList<ParseFile> currentParseFileRequests = new ArrayList<ParseFile>();
+	private static Queue<Object[]> memeQueue = new LinkedList<Object[]>();
 
 	public static enum PopulateQueueMode {
-		REFRESH,  // Refresh lazily when the pending background fetch completes.
+		REFRESH, // Refresh lazily when the pending background fetch completes.
 		BACKGROUND_NEXT
 	}
 
-	private static int pageIndex = 0;
-	/* ParseQuery to load memes from, needs to be initialized */
-	private static ParseQuery<ParseObject> currentQuery = null;
-	private static Queue<Object[]> memeQueue = new LinkedList<Object[]>();
-
-	public static Object[] getNextMeme() {
-
-		Object[] parsedMeme = memeQueue.poll();
-		if (memeQueue.size() < PAGE_SIZE / 2) {
-//			Log.d("getNextmeme()", "calling populateQueue()");
+	public static Object[] getNextMeme(PopulateQueueMode populateMode) {
+		if (populateMode == PopulateQueueMode.REFRESH) {
+			populateQueueWithMemes(PopulateQueueMode.REFRESH);
+		} else if (populateMode == PopulateQueueMode.BACKGROUND_NEXT
+				&& memeQueue.size() < PAGE_SIZE / 2) {
 			populateQueueWithMemes(PopulateQueueMode.BACKGROUND_NEXT);
 		}
-		
-		if (refreshRequestMade) {
-//			Log.d("getNextmeme()", "calling pop queue() as refresh req was made");
-			populateQueueWithMemes(PopulateQueueMode.REFRESH);
-		}
 
-//		Log.d("getNextMeme ", "After return found items, in queue: "
-//				+ memeQueue.size());
+		Object[] parsedMeme = memeQueue.poll();
 		return parsedMeme;
 	}
 
 	public static void populateQueueWithMemes(
 			final PopulateQueueMode populateMode) {
-//		Log.d("Inside populateQueueWithMemes", pageIndex + " is the pageIndex");
+		// If the user hits refresh, we should clear the queue and cancel
+		// any pending background requests and get the latest batch of memes.
+		if (populateMode == PopulateQueueMode.REFRESH) {
+			if (currentParseQueries.size() > 0) {
+				// Cancel any previous requests.
+				for (ParseQuery<ParseObject> currentQuery : currentParseQueries) {
+					currentQuery.cancel();
+				}
 
-		// TODO: If the user hit refresh, we should still get the list of new memes.
-		if (backgroundFetchInProgress) {
-			if (populateMode == PopulateQueueMode.REFRESH) {
-//				Log.d("Inside populateQueueWithMemes", "Refresh req made but pending request");
-				refreshRequestMade = true;
+				for (ParseFile parseFileRequest : currentParseFileRequests) {
+					parseFileRequest.cancel();
+				}
+				currentParseFileRequests.clear();
+				currentParseQueries.clear();
 			}
-			return;
-		}
 
-		if (refreshRequestMade || populateMode == PopulateQueueMode.REFRESH) {
-//			Log.d("Inside populateQueueWithMemes", "Refresh req WAS made so clearning queue.");
-
-			refreshRequestMade = false;
 			memeQueue.clear();
 			pageIndex = 0;
+		} else if (populateMode == PopulateQueueMode.BACKGROUND_NEXT) {
+			// User hit "next" but there already is a background fetch in
+			// progress.
+			if (currentParseQueries.size() > 0) {
+				return;
+			}
 		}
-		
-//		Log.d("Inside populateQueueWithMemes", "Fetching more data.");
 
-		currentQuery = ParseQuery.getQuery(PARSE_KEY);
+		final ParseQuery<ParseObject> currentQuery = ParseQuery
+				.getQuery(PARSE_KEY);
 		currentQuery.orderByDescending("createdAt");
 		currentQuery.setLimit(PAGE_SIZE);
-
-		backgroundFetchInProgress = true;
 		currentQuery.setSkip(PAGE_SIZE * pageIndex);
-		currentQuery.findInBackground(new FindCallback<ParseObject>() {
+		currentParseQueries.add(currentQuery);
 
+		currentQuery.findInBackground(new FindCallback<ParseObject>() {
 			@Override
 			public void done(List<ParseObject> objectsFromParse,
 					ParseException e) {
@@ -113,7 +109,13 @@ public abstract class BackEnd {
 				} else {
 					pageIndex = 0;
 				}
-				backgroundFetchInProgress = false;
+				// CAVEAT: It is possible for the query to have reached here
+				// but it is not actually done i.e. the ParseFile data fetch
+				// has not completed yet. If the memeQueue size is < PAGE_SIZE /
+				// 2 and the user hit next before the ParseFile data fetch
+				// completed then a new ParseQuery will be initiated. In this case, the size of
+				// the memeQueue can exceed PAGE_SIZE.
+				currentParseQueries.remove(currentQuery);
 			}
 		});
 	}
@@ -135,11 +137,8 @@ public abstract class BackEnd {
 			getImageBitmapFromParseFileInBackground(toParse, memeQueueObject);
 			// CAVEAT: Adding the memeQueueObject to the queue here ensures
 			// that the memes are added in time sorted order. However, the
-			// fetch
-			// of the top and bottom text often happens before the bitmap
-			// itself
-			// which is a problem.
-			// Show the spinner??
+			// fetch of the top and bottom text often happens before the bitmap
+			// itself which is a problem. Perhaps show the spinner??
 			// memeQueue.add(memeQueueObject);
 
 		}
@@ -147,17 +146,21 @@ public abstract class BackEnd {
 
 	private static void getImageBitmapFromParseFileInBackground(
 			ParseObject toParse, final Object[] memeQueueObject) {
-		((ParseFile) (toParse.get(IMAGE_KEY)))
-				.getDataInBackground(new GetDataCallback() {
-					public void done(byte[] data, ParseException e) {
-						if (e == null) {
-							memeQueueObject[0] = convertByteToBit((byte[]) data);
-							memeQueue.add(memeQueueObject);
-						} else {
-							e.printStackTrace();
-						}
-					}
-				});
+		final ParseFile getImageDataFromFile = (ParseFile) toParse
+				.get(IMAGE_KEY);
+		currentParseFileRequests.add(getImageDataFromFile);
+
+		getImageDataFromFile.getDataInBackground(new GetDataCallback() {
+			public void done(byte[] data, ParseException e) {
+				if (e == null) {
+					memeQueueObject[0] = convertByteToBit((byte[]) data);
+					memeQueue.add(memeQueueObject);
+					currentParseFileRequests.remove(getImageDataFromFile);
+				} else {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	/**
@@ -240,18 +243,6 @@ public abstract class BackEnd {
 				(int) (originalBitmap.getWidth() * factorToUse),
 				(int) (originalBitmap.getHeight() * factorToUse), false);
 		return resizedBitmap;
-	}
-
-	/**
-	 * Initializes a Meme item ParseQuery into currentQuery, then counts the
-	 * amount of memes in query and resets currentIndex to 0.
-	 */
-	public static void initializeFroglingBrowser(boolean isRefresh) {
-		if (isRefresh) {
-			populateQueueWithMemes(PopulateQueueMode.REFRESH);
-		} else {
-			populateQueueWithMemes(PopulateQueueMode.BACKGROUND_NEXT);
-		}
 	}
 
 	/**
