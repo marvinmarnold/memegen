@@ -3,22 +3,14 @@
  */
 package com.example.frogling;
 
-import java.security.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import utilities.BackEnd;
 import utilities.BackEnd.PopulateQueueMode;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore.Images.Media;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,13 +20,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 
 /**
  * @author tal11
@@ -81,6 +68,11 @@ public class ViewSingleFragment extends Fragment {
 		case R.id.action_share:
 			return true;
 		case R.id.action_refresh:
+			if (!((MainActivity) getActivity()).hasConnection()) {
+				Toast.makeText(getActivity(), "No internet connection found.",
+						Toast.LENGTH_LONG).show();
+				return false;
+			}
 			showMeme(PopulateQueueMode.REFRESH);
 			return true;
 		default:
@@ -94,8 +86,13 @@ public class ViewSingleFragment extends Fragment {
 	 * view.
 	 */
 	public void showMeme(PopulateQueueMode populateMode) {
+		if (!((MainActivity) getActivity()).hasConnection()) {
+			Toast.makeText(getActivity(), "No internet connection found.",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		Object[] shownMeme = BackEnd.getNextMeme(populateMode);
-
 		if (shownMeme != null && shownMeme.length > 0) {
 			ImageView viewedImage = (ImageView) getActivity().findViewById(
 					R.id.view_meme_image);
@@ -123,7 +120,7 @@ public class ViewSingleFragment extends Fragment {
 			viewedHashtag.setText(hashtagText);
 			createdTime.setText(uploadDate.toString());
 
-		} 
+		}
 	}
 
 }

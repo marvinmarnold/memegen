@@ -7,14 +7,16 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-//import android.widget.Toast;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
+//import android.widget.Toast;
 
 /**
  * This demonstrates the use of action bar tabs and how they interact with other
@@ -26,6 +28,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		Parse.initialize(this, "AyjtKEZBNR17lzzKJ5LBAQrnb86hNFUNe6eAJ55T",
 				"9kpSKrmsdyCXfu7Q68nEpRe9qLBOUTNsdeZFeQqV");
 		ParseAnalytics.trackAppOpened(getIntent());
@@ -52,9 +55,9 @@ public class MainActivity extends Activity {
 		if (savedInstanceState != null) {
 			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
 		}
-
+		
 	}
-
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
@@ -117,6 +120,13 @@ public class MainActivity extends Activity {
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
 //			Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
 		}
-	}
 
+	}
+	
+	public boolean hasConnection(){
+		ConnectivityManager cm = (ConnectivityManager) 
+				getSystemService(this.CONNECTIVITY_SERVICE);
+		Log.d("CheckConnextion", "connection status online:" +(cm.getActiveNetworkInfo() != null));
+		return cm.getActiveNetworkInfo() != null;
+	}
 }
