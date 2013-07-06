@@ -87,8 +87,8 @@ public class CreateMemeFragment extends Fragment {
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		 MenuItem upload_item = menu.findItem(R.id.action_refresh);
-		 upload_item.setVisible(false);
+		MenuItem upload_item = menu.findItem(R.id.action_refresh);
+		upload_item.setVisible(false);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -103,8 +103,8 @@ public class CreateMemeFragment extends Fragment {
 			startActivityForResult(
 					Intent.createChooser(intent, "Select Picture"),
 					SELECT_PICTURE);
-//			Toast.makeText(parentActivity.getApplicationContext(),
-//					"picking an image from gallery", Toast.LENGTH_LONG).show();
+			// Toast.makeText(parentActivity.getApplicationContext(),
+			// "picking an image from gallery", Toast.LENGTH_LONG).show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -116,13 +116,13 @@ public class CreateMemeFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (data != null && data.getData() != null) {
-//			Toast.makeText(parentActivity.getApplicationContext(),
-//					"onActivityResult()", Toast.LENGTH_LONG).show();
+			// Toast.makeText(parentActivity.getApplicationContext(),
+			// "onActivityResult()", Toast.LENGTH_LONG).show();
 
 			if (requestCode == SELECT_PICTURE) {
 
-//				Toast.makeText(parentActivity.getApplicationContext(),
-//						"select pic()", Toast.LENGTH_LONG).show();
+				// Toast.makeText(parentActivity.getApplicationContext(),
+				// "select pic()", Toast.LENGTH_LONG).show();
 
 				Uri selectedImageUri = data.getData();
 				InputStream imageStream;
@@ -147,6 +147,13 @@ public class CreateMemeFragment extends Fragment {
 	}
 
 	private void share() {
+		if (!((MainActivity) getActivity()).hasConnection()) {
+			Toast.makeText(getActivity(),
+					"No internet connection found.",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		if (!isHashtagValid()) {
 			return;
 		}
@@ -161,7 +168,7 @@ public class CreateMemeFragment extends Fragment {
 			startActivity(Intent.createChooser(shareIntent,
 					getString(R.string.menu_share)));
 		} else {
-//			Log.d("Share", "URL null error");
+			// Log.d("Share", "URL null error");
 		}
 	}
 
@@ -185,6 +192,14 @@ public class CreateMemeFragment extends Fragment {
 	 * Bakcend.saveToParse(Bitmap, String, String) method.
 	 */
 	public void post() {
+
+		if (!((MainActivity) getActivity()).hasConnection()) {
+			Toast.makeText(getActivity(),
+					"No internet connection found.",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		if (!isHashtagValid()) {
 			return;
 		}

@@ -83,6 +83,12 @@ public class ViewSingleFragment extends Fragment {
 		case R.id.action_share:
 			return true;
 		case R.id.action_refresh:
+			if (!((MainActivity) getActivity()).hasConnection()) {
+				Toast.makeText(getActivity(),
+						"No internet connection found.",
+						Toast.LENGTH_LONG).show();
+				return false;
+			}
 			BackEnd.initializeFroglingBrowser(true);
 			showMeme();
 			return true;
@@ -97,6 +103,12 @@ public class ViewSingleFragment extends Fragment {
 	 * view.
 	 */
 	public void showMeme() {
+		if (!((MainActivity) getActivity()).hasConnection()) {
+			Toast.makeText(getActivity(),
+					"No internet connection found.",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
 		Object[] shownMeme = BackEnd.getNextMeme();
 
 		if (shownMeme != null && shownMeme.length > 0) {
