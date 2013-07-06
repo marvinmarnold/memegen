@@ -134,8 +134,8 @@ public class CreateMemeFragment extends Fragment {
 					// Convert to bitmap.
 					// Replace the image id with bitmap.
 
-					ImageView image = (ImageView) getActivity().findViewById(
-							R.id.meme_image);
+					ImageView image = (ImageView) parentActivity
+							.findViewById(R.id.meme_image);
 
 					image.setImageBitmap(bmp);
 				} catch (FileNotFoundException e) {
@@ -148,17 +148,18 @@ public class CreateMemeFragment extends Fragment {
 
 	private void share() {
 		if (!((MainActivity) getActivity()).hasConnection()) {
-			Toast.makeText(getActivity(),
-					"No internet connection found.",
+			Toast.makeText(getActivity(), "No internet connection found.",
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		
+
 		if (!isHashtagValid()) {
 			return;
 		}
 
-		String url = save();
+		String url = BackEnd.saveToSdCard(parentActivity
+				.getApplicationContext(), (RelativeLayout) parentActivity
+				.findViewById(R.id.actual_frogling));
 
 		if (url != null) {
 			Intent shareIntent = new Intent();
@@ -194,12 +195,11 @@ public class CreateMemeFragment extends Fragment {
 	public void post() {
 
 		if (!((MainActivity) getActivity()).hasConnection()) {
-			Toast.makeText(getActivity(),
-					"No internet connection found.",
+			Toast.makeText(getActivity(), "No internet connection found.",
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		
+
 		if (!isHashtagValid()) {
 			return;
 		}
@@ -212,8 +212,9 @@ public class CreateMemeFragment extends Fragment {
 		image.setDrawingCacheEnabled(true);
 		// generate image Bitmap
 		Bitmap memeMap = Bitmap.createBitmap(image.getDrawingCache());
-		BackEnd.saveToParse(memeMap, showTop.getText().toString(), showBottom
-				.getText().toString(), hashtag);
+		BackEnd.saveToParse(getActivity().getApplicationContext(), memeMap,
+				showTop.getText().toString(), showBottom.getText().toString(),
+				hashtag);
 	}
 
 	/**

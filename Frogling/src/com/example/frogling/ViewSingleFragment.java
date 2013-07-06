@@ -9,7 +9,9 @@ import utilities.BackEnd;
 import utilities.BackEnd.PopulateQueueMode;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +31,8 @@ import android.widget.Toast;
  * 
  */
 public class ViewSingleFragment extends Fragment {
-
 	protected Activity parentActivity;
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -44,7 +46,8 @@ public class ViewSingleFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		Button nextButton = (Button) getActivity().findViewById(
+		parentActivity = getActivity();
+		Button nextButton = (Button) parentActivity.findViewById(
 				R.id.view_next_button);
 		nextButton.setOnClickListener(new OnClickListener() {
 
@@ -66,10 +69,11 @@ public class ViewSingleFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_share:
+			share();
 			return true;
 		case R.id.action_refresh:
-			if (!((MainActivity) getActivity()).hasConnection()) {
-				Toast.makeText(getActivity(), "No internet connection found.",
+			if (!((MainActivity) parentActivity).hasConnection()) {
+				Toast.makeText(parentActivity, "No internet connection found.",
 						Toast.LENGTH_LONG).show();
 				return false;
 			}
@@ -81,28 +85,51 @@ public class ViewSingleFragment extends Fragment {
 
 	}
 
+	private void share() {
+		if (!((MainActivity) parentActivity).hasConnection()) {
+			Toast.makeText(parentActivity, "No internet connection found.",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+
+		String url = BackEnd.saveToSdCard(parentActivity
+				.getApplicationContext(), (RelativeLayout) parentActivity
+				.findViewById(R.id.meme_viewed));
+
+		if (url != null) {
+			Intent shareIntent = new Intent();
+			shareIntent.setAction(Intent.ACTION_SEND);
+			shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+			shareIntent.setType("image/jpeg");
+			startActivity(Intent.createChooser(shareIntent,
+					getString(R.string.menu_share)));
+		} else {
+			// Log.d("Share", "URL null error");
+		}
+	}
+	
 	/**
 	 * Shows the meme from BackEnd.getCurrentMeme() in the current activity
 	 * view.
 	 */
 	public void showMeme(PopulateQueueMode populateMode) {
-		if (!((MainActivity) getActivity()).hasConnection()) {
-			Toast.makeText(getActivity(), "No internet connection found.",
+		if (!((MainActivity) parentActivity).hasConnection()) {
+			Toast.makeText(parentActivity, "No internet connection found.",
 					Toast.LENGTH_LONG).show();
 			return;
 		}
 		
 		Object[] shownMeme = BackEnd.getNextMeme(populateMode);
 		if (shownMeme != null && shownMeme.length > 0) {
-			ImageView viewedImage = (ImageView) getActivity().findViewById(
+			ImageView viewedImage = (ImageView) parentActivity.findViewById(
 					R.id.view_meme_image);
-			TextView viewedTopText = (TextView) getActivity().findViewById(
+			TextView viewedTopText = (TextView) parentActivity.findViewById(
 					R.id.view_top_text);
-			TextView viewedBottomText = (TextView) getActivity().findViewById(
+			TextView viewedBottomText = (TextView) parentActivity.findViewById(
 					R.id.view_bottom_text);
-			TextView viewedHashtag = (TextView) getActivity().findViewById(
+			TextView viewedHashtag = (TextView) parentActivity.findViewById(
 					R.id.hashtag);
-			TextView createdTime = (TextView) getActivity().findViewById(
+			TextView createdTime = (TextView) parentActivity.findViewById(
 					R.id.time_stamp);
 
 			Bitmap map = (Bitmap) shownMeme[0];
@@ -111,15 +138,15 @@ public class ViewSingleFragment extends Fragment {
 			String hashtagText = (String) shownMeme[3];
 			Date uploadDate = (Date) shownMeme[4];
 
-			// Toast.makeText(getActivity(), unixToDate(timeInMilli),
-			// Toast.LENGTH_LONG).show();
-
 			viewedImage.setImageBitmap(map);
 			viewedTopText.setText(topText);
 			viewedBottomText.setText(bottomText);
 			viewedHashtag.setText(hashtagText);
 			createdTime.setText(uploadDate.toString());
 
+		} else {
+			Toast.makeText(parentActivity, "Frogling fetch in progress...",
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 
